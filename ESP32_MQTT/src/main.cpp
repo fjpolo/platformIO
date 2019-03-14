@@ -5,11 +5,11 @@
  with the ESP8266 board/library.
 
  It connects to an MQTT server then:
-  - publishes "hello world" to the topic "outTopic" every two seconds
-  - subscribes to the topic "inTopic", printing out any messages
+  - publishes "ESP32:" to the topic "/casa/oficina/temp" every two seconds
+  - subscribes to the topic "/casa/oficina/luz", printing out any messages
     it receives. NB - it assumes the received payloads are strings not binary
-  - If the first character of the topic "inTopic" is an 1, switch ON the ESP Led,
-    else switch it off
+  - If the first character of the topic "/casa/oficina/luz" is an 1, print ON
+  via serial, else print OFF
 
  It will reconnect to the server if the connection is lost using a blocking
  reconnect function. See the 'mqtt_reconnect_nonblocking' example for how to
@@ -20,6 +20,10 @@
        http://arduino.esp8266.com/stable/package_esp8266com_index.json
   - Open the "Tools -> Board -> Board Manager" and click install for the ESP8266"
   - Select your Espressif ESP32 devkit v4 WROOM in "Tools -> Board"
+
+  Follow similar steps for NodeMCU and PlatformIO. install PubSubClient, Create
+  a new project for NodeMCU v1.0 (my case) and yeah, just use this main.cpp.
+
 
 */
 // Includes
@@ -125,7 +129,7 @@ int value = 0;
      if (client.connect(clientId.c_str())) {
        Serial.println("connected");
        // Once connected, publish an announcement...
-       client.publish("casa/oficina/temp", "Enviando el primer mensaje");
+       client.publish("casa/oficina/temp", "Enviando el primer mensaje ESP32");
        // ... and resubscribe
        client.subscribe("casa/oficina/luz");
      } else {
@@ -162,7 +166,7 @@ long now = millis();
 if (now - lastMsg > 2000) {
   lastMsg = now;
   ++value;
-  snprintf (msg, 50, "hello world #%ld", value);    // Should replace this for a temp measurement
+  snprintf (msg, 50, "ESP32: #%ld", value);    // Should replace this for a temp measurement
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish("casa/oficina/temp", msg);
